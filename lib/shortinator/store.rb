@@ -49,6 +49,16 @@ module Shortinator
       raise
     end
 
+    def insert(id, url)
+      doc = {
+        'id' => id,
+        'url' => url,
+        'click_count' => 0,
+        'clicks' => []
+      }
+      collection.insert(doc)
+    end
+
     def get(id)
       if item = collection.find_one('id' => id)
         OpenStruct.new(item)
