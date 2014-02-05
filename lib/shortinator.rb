@@ -24,12 +24,12 @@ module Shortinator
     @_store ||= Shortinator::Store.new
   end
 
-  def self.mongo_url
-    @_mongo_url ||= ENV['SHORTINATOR_STORE_URL']
+  def self.store_url
+    @_store_url ||= ENV['SHORTINATOR_STORE_URL']
   end
 
-  def self.mongo_url=(value)
-    @_mongo_url = value
+  def self.store_url=(value)
+    @_store_url = value
   end
 
   def self.host

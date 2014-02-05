@@ -19,8 +19,8 @@ module Shortinator
     end
 
     def client
-      raise ArgumentError.new("Shortinator.mongo_url not set") unless Shortinator.mongo_url
-      Mongo::MongoClient.from_uri(Shortinator.mongo_url)
+      raise ArgumentError.new("Shortinator.store_url not set") unless Shortinator.store_url
+      Mongo::MongoClient.from_uri(Shortinator.store_url)
     end
 
     def ensure_indexes
