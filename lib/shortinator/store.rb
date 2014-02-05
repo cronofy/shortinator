@@ -29,14 +29,14 @@ module Shortinator
       collection.ensure_index([['tag', Mongo::ASCENDING]])
     end
 
-    def add(url, tag=nil)
+    def add(url, tags=[])
       doc = {
         'id' => generate_id,
         'url' => url,
         'click_count' => 0,
-        'clicks' => []
+        'clicks' => [],
+        'tags' => tags
       }
-      doc['tag'] = tag if tag
 
       collection.insert(doc)
 
@@ -54,7 +54,8 @@ module Shortinator
         'id' => id,
         'url' => url,
         'click_count' => 0,
-        'clicks' => []
+        'clicks' => [],
+        'tags' => []
       }
       collection.insert(doc)
     end

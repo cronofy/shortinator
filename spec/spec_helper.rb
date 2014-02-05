@@ -6,6 +6,7 @@ require 'shortinator' # and any other gems you need
 include Shortinator
 
 Shortinator.store_url = "mongodb://localhost:27017/shortinator_test"
+Shortinator.host = "http://sho.rt"
 
 RSpec.configure do |config|
   # some (optional) config here

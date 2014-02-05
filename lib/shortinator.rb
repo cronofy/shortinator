@@ -8,7 +8,7 @@ module Shortinator
   def self.shorten(url, tag=nil)
     raise ArgumentError.new("Shortinator.host not set") unless host
     id = store.add(url, tag)
-    "#{host.chop("/")}/#{id}"
+    "#{host.chomp("/")}/#{id}"
   end
 
   def self.click(id, params)
