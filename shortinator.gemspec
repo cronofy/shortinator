@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Shortinator::VERSION
   spec.authors       = ["Adam Bird"]
   spec.email         = ["adam.bird@gmail.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = %q{Library for shortening urls}
+  spec.description   = %q{Works with companion web project to redirect where required}
   spec.homepage      = ""
   spec.license       = "MIT"
 

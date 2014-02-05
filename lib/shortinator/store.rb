@@ -4,6 +4,11 @@ module Shortinator
   class Store
 
     MONGO_DUPLICATE_KEY_ERROR_CODE = 11000
+    MAX_RANDOM = (62 ** 7) -1
+
+    def generate_id
+      SecureRandom.random_number(MAX_RANDOM).base62_encode
+    end
 
     def collection
       @_collection ||= begin
@@ -20,12 +25,13 @@ module Shortinator
 
     def ensure_indexes
       collection.ensure_index([['id', Mongo::ASCENDING]], { :unique => true })
+      collection.ensure_index([['url', Mongo::ASCENDING]], { :unique => true })
       collection.ensure_index([['tag', Mongo::ASCENDING]])
     end
 
-    def add(id, url, tag=nil)
+    def add(url, tag=nil)
       doc = {
-        'id' => id,
+        'id' => generate_id,
         'url' => url,
         'click_count' => 0,
         'clicks' => []
@@ -34,8 +40,12 @@ module Shortinator
 
       collection.insert(doc)
 
+      doc['id']
+
     rescue Mongo::OperationFailure => e
-      raise DuplicateIdError.new("#{id} already in use") if e.error_code == MONGO_DUPLICATE_KEY_ERROR_CODE
+      if e.error_code == MONGO_DUPLICATE_KEY_ERROR_CODE
+        return collection.find_one('url' => url)['id']
+      end
       raise
     end
 

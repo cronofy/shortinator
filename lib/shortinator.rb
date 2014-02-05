@@ -5,26 +5,19 @@ require 'ostruct'
 
 module Shortinator
 
-  MAX_RANDOM = (62 ** 7) -1
-
-  def self.generate_id
-    SecureRandom.random_number(MAX_RANDOM).base62_encode
-  end
-
   def self.shorten(url, tag=nil)
     raise ArgumentError.new("Shortinator.host not set") unless host
-    id = generate_id
-    store.add(id, url, tag)
+    id = store.add(url, tag)
     "#{host}/#{id}"
   end
 
   def self.click(id, ip_address)
-    if link = store.get(id)
-      store.track(id, Time.now.utc, ip_address)
-      link.url
-    else
-      ArgumentError.new("#{id} not recognised")
+    unless link = store.get(id)
+      raise ArgumentError.new("#{id} not recognised")
     end
+
+    store.track(id, Time.now.utc, ip_address)
+    link.url
   end
 
   def self.store
