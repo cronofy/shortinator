@@ -65,15 +65,11 @@ module Shortinator
       end
     end
 
-    def track(id, at, ip_address)
+    def track(id, at, params={})
       query = { 'id' => id }
       doc = {
         '$inc' => { 'click_count' => 1 },
-        '$push' => { 'clicks' => {
-          'ip_address' => ip_address,
-          'at' => at
-         }
-        }
+        '$push' => { 'clicks' => params.merge({ 'at' => at}) }
       }
       collection.update(query, doc)
     end

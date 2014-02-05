@@ -24,16 +24,20 @@ describe Store do
 
   describe "#track" do
     let(:at) { Time.now.utc }
-    let(:ip_address) { "23.46.12.35" }
+    let(:params) { { :ip => "23.46.12.35" } }
 
     before(:each) do
       @id = store.add(random_string)
     end
 
-    subject { store.track(@id, at, ip_address) }
+    subject { store.track(@id, at, params) }
 
     it "should increment the click count" do
       expect { subject }.to change { store.get(@id).click_count }.by(1)
+    end
+    it "should add the params to the record" do
+      subject
+      store.get(@id).clicks.first['ip'].should eq(params[:ip])
     end
 
   end
