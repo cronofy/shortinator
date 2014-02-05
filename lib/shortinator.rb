@@ -11,12 +11,10 @@ module Shortinator
     "#{host.chop("/")}/#{id}"
   end
 
-  def self.click(id, ip_address)
-    unless link = store.get(id)
-      raise ArgumentError.new("#{id} not recognised")
-    end
+  def self.click(id, params)
+    raise ArgumentError.new("#{id} not recognised") unless link = store.get(id)
 
-    store.track(id, Time.now.utc, ip_address)
+    store.track(id, Time.now.utc, params)
     link.url
   end
 

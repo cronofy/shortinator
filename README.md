@@ -33,10 +33,10 @@ Shorten a URL and tag it
 shortened_url = Shortinator.shorten("http://company.com/a/very/long/url", "daily_update")
 ```
 
-Track a click on a url
+Track a click on a url along with some arbitrary params
 
 ```ruby
-Shortinator.click(id, "12.34.55.124")
+Shortinator.click(id, { :ip => "123.34.56.67" })
 ```
 
 ## Web Host
