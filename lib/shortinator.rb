@@ -1,9 +1,9 @@
-require "shortinator/version"
+require_relative "shortinator/version"
 require_relative 'shortinator/store'
-require 'base62'
-require 'ostruct'
 
 module Shortinator
+
+  KEY_REGEX = /^[0-9a-zA-Z]+$/
 
   def self.shorten(url, tag=nil)
     raise ArgumentError.new("Shortinator.host not set") unless host
