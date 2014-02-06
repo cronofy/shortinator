@@ -33,13 +33,7 @@ module Shortinator
     end
 
     def add(url, tags=[])
-      doc = {
-        'id' => generate_id,
-        'url' => url,
-        'click_count' => 0,
-        'clicks' => [],
-        'tags' => tags
-      }
+      doc = new_doc(generate_id, url, tags)
 
       collection.insert(doc)
 
@@ -53,14 +47,17 @@ module Shortinator
     end
 
     def insert(id, url)
-      doc = {
+      collection.insert(new_doc(id, url, []))
+    end
+
+    def new_doc(id, url, tags)
+      {
         'id' => id,
         'url' => url,
         'click_count' => 0,
         'clicks' => [],
-        'tags' => []
+        'tags' => tags
       }
-      collection.insert(doc)
     end
 
     def get(id)
