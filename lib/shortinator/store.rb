@@ -29,7 +29,6 @@ module Shortinator
     def ensure_indexes
       collection.ensure_index([['id', Mongo::ASCENDING]], { :unique => true })
       collection.ensure_index([['url', Mongo::ASCENDING]], { :unique => true })
-      collection.ensure_index([['tag', Mongo::ASCENDING]])
     end
 
     def add(url, tags=[])
@@ -54,6 +53,7 @@ module Shortinator
       {
         'id' => id,
         'url' => url,
+        'created_at' => Time.now.utc,
         'click_count' => 0,
         'clicks' => [],
         'tags' => tags
