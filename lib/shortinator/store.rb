@@ -4,13 +4,17 @@ require 'base62'
 module Shortinator
   class Store
 
-    MONGO_DUPLICATE_KEY_ERROR_CODE = 11000
-    MAX_RANDOM = (62 ** 7) -1
-
     ShortenedLink = Struct.new(:id, :url, :created_at, :click_count, :clicks, :tag)
 
+    KEY_LENGTH = 7
+    MAX_KEY_VALUE = (62 ** KEY_LENGTH) - 1
+    KEY_OFFSET = 62 ** (KEY_LENGTH - 1)
+
     def generate_id
-      SecureRandom.random_number(MAX_RANDOM).base62_encode
+      begin
+        id = (SecureRandom.random_number(MAX_KEY_VALUE - KEY_OFFSET) + KEY_OFFSET).base62_encode
+      end while id_exists?(id)
+      id
     end
 
     def collection
@@ -28,36 +32,33 @@ module Shortinator
 
     def ensure_indexes
       collection.ensure_index([['id', Mongo::ASCENDING]], { :unique => true })
-      collection.ensure_index([['url', Mongo::ASCENDING]], { :unique => true })
     end
 
-    def add(url, tags=[])
-      doc = new_doc(generate_id, url, tags)
+    def add(url, tags={})
+      doc = new_doc(generate_id, url, Time.now.utc, tags)
 
       collection.insert(doc)
 
       doc['id']
-
-    rescue Mongo::OperationFailure => e
-      if e.error_code == MONGO_DUPLICATE_KEY_ERROR_CODE
-        return collection.find_one('url' => url)['id']
-      end
-      raise
     end
 
-    def insert(id, url)
-      collection.insert(new_doc(id, url, []))
+    def insert(id, url, created_at=Time.now.utc, tags={})
+      collection.insert(new_doc(id, url, created_at, tags))
     end
 
-    def new_doc(id, url, tags)
+    def new_doc(id, url, created_at=Time.now.utc, tags={})
       {
         'id' => id,
         'url' => url,
-        'created_at' => Time.now.utc,
+        'created_at' => created_at,
         'click_count' => 0,
         'clicks' => [],
         'tags' => tags
       }
+    end
+
+    def id_exists?(id)
+      collection.find({ 'id' => id } , { :fields => { :_id => 1 } }).limit(1).count(true) > 0
     end
 
     def get(id)
@@ -73,10 +74,6 @@ module Shortinator
         '$push' => { 'clicks' => params.merge({ 'at' => at}) }
       }
       collection.update(query, doc)
-    end
-
-    class DuplicateIdError < StandardError
-
     end
   end
 end

@@ -22,14 +22,6 @@ describe Store do
     it "should have a url set" do
       @record.url.should eq(url)
     end
-    context "when already added url" do
-      before(:each) do
-        @id = subject
-      end
-      it "should raise return the same id" do
-        subject.should eq(@id)
-      end
-    end
   end
 
   describe "#track" do

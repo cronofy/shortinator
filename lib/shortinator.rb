@@ -3,11 +3,11 @@ require_relative 'shortinator/store'
 
 module Shortinator
 
-  KEY_REGEX = /^[0-9a-zA-Z]+$/
+  KEY_REGEX = /\A[0-9a-zA-Z]{#{Store::KEY_LENGTH}}\Z/
 
-  def self.shorten(url, tag=nil)
+  def self.shorten(url, tags={})
     raise ArgumentError.new("Shortinator.host not set") unless host
-    id = store.add(url, tag)
+    id = store.add(url, tags)
     "#{host.chomp("/")}/#{id}"
   end
 
