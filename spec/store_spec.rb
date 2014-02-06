@@ -9,8 +9,18 @@ describe Store do
 
     subject { store.add(url, tag) }
 
+    before(:each) do
+      @record = store.get(subject)
+    end
+
     it "should be retrievable" do
-      store.get(subject).should_not be_nil
+      @record.should_not be_nil
+    end
+    it "should have a created_at set" do
+      @record.created_at.should be_an_instance_of(Time)
+    end
+    it "should have a url set" do
+      @record.url.should eq(url)
     end
     context "when already added url" do
       before(:each) do

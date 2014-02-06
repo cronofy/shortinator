@@ -7,7 +7,7 @@ module Shortinator
     MONGO_DUPLICATE_KEY_ERROR_CODE = 11000
     MAX_RANDOM = (62 ** 7) -1
 
-    ShortenedLink = Struct.new(:id, :url, :click_count, :clicks, :tag)
+    ShortenedLink = Struct.new(:id, :url, :created_at, :click_count, :clicks, :tag)
 
     def generate_id
       SecureRandom.random_number(MAX_RANDOM).base62_encode
@@ -62,7 +62,7 @@ module Shortinator
 
     def get(id)
       if item = collection.find_one('id' => id)
-        ShortenedLink.new(item['id'], item['url'], item['click_count'], item['clicks'], item['tags'])
+        ShortenedLink.new(item['id'], item['url'], item['created_at'], item['click_count'], item['clicks'], item['tags'])
       end
     end
 

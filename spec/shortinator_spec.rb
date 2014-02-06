@@ -14,8 +14,8 @@ describe Shortinator do
       @id = @shortened_url.gsub("#{Shortinator.host}/", '')
     end
 
-    it "should return a shortened url with a 7 digit" do
-      @id.length.should eq(7)
+    it "should return a shortened url with id that matches regex" do
+      @id.should match(Shortinator::KEY_REGEX)
     end
     it "should be possible to retrieve the url from the store" do
       store.get(@id).url.should eq(url)
