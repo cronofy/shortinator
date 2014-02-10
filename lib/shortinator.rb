@@ -19,20 +19,20 @@ module Shortinator
     link.url
   end
 
-  def configured?
+  def self.configured?
     store_configured? && !!host
   end
 
-  def store_configured?
+  def self.store_configured?
     !!store_url
   end
 
-  def configured!
+  def self.configured!
     store_configured!
     raise ArgumentError.new('Shortinator not configured!') unless configured?
   end
 
-  def store_configured!
+  def self.store_configured!
     raise ArgumentError.new('Shortinator store not configured!') unless store_configured?
   end
 
