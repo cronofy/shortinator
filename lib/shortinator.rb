@@ -6,9 +6,10 @@ module Shortinator
   KEY_REGEX = /\A[0-9a-zA-Z]{#{Store::KEY_LENGTH}}\Z/
 
   def self.shorten(url, tags={})
-    raise ArgumentError.new("Shortinator.host not set") unless host
+    configured!
+
     id = store.add(url, tags)
-    "#{host.chomp("/")}/#{id}"
+    "#{host}/#{id}"
   end
 
   def self.click(id, params)
@@ -16,6 +17,23 @@ module Shortinator
 
     store.track(id, Time.now.utc, params)
     link.url
+  end
+
+  def configured?
+    store_configured? && !!host
+  end
+
+  def store_configured?
+    !!store_url
+  end
+
+  def configured!
+    store_configured!
+    raise ArgumentError.new('Shortinator not configured!') unless configured?
+  end
+
+  def store_configured!
+    raise ArgumentError.new('Shortinator store not configured!') unless store_configured?
   end
 
   def self.store
@@ -31,11 +49,11 @@ module Shortinator
   end
 
   def self.host
-    @_host ||= ENV['SHORTINATOR_HOST']
+    @_host ||= ENV['SHORTINATOR_HOST'].chomp('/')
   end
 
   def self.host=(value)
-    @_host = value
+    @_host = value.chomp('/')
   end
 
 end
