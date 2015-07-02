@@ -32,13 +32,15 @@ module Shortinator
 
     def ensure_indexes
       collection.ensure_index([['id', Mongo::ASCENDING]], { :unique => true })
+      # not making this unique as existing data is likely to fall foul
+      collection.ensure_index([['url', Mongo::ASCENDING]])
     end
 
     def add(url, tags={})
-      doc = new_doc(generate_id, url, Time.now.utc, tags)
-
-      collection.insert(doc)
-
+      unless doc  = collection.find_one({ 'url' => url })
+        doc = new_doc(generate_id, url, Time.now.utc, tags)
+        collection.insert(doc)
+      end
       doc['id']
     end
 

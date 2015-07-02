@@ -15,10 +15,10 @@ describe Shortinator do
     end
 
     it "should return a shortened url with id that matches regex" do
-      @id.should match(Shortinator::KEY_REGEX)
+      expect(@id).to match(Shortinator::KEY_REGEX)
     end
     it "should be possible to retrieve the url from the store" do
-      store.get(@id).url.should eq(url)
+      expect(store.get(@id).url).to eq(url)
     end
 
   end
@@ -35,8 +35,8 @@ describe Shortinator do
 
     it "records the click in the store" do
       subject
-      store.get(@id).clicks[0]['ip'].should eq(params[:ip])
-      store.get(@id).clicks[0]['user_agent'].should eq(params[:user_agent])
+      expect(store.get(@id).clicks[0]['ip']).to eq(params[:ip])
+      expect(store.get(@id).clicks[0]['user_agent']).to eq(params[:user_agent])
     end
   end
 end

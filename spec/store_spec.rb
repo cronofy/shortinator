@@ -14,13 +14,26 @@ describe Store do
     end
 
     it "should be retrievable" do
-      @record.should_not be_nil
+      expect(@record).to_not be_nil
     end
     it "should have a created_at set" do
-      @record.created_at.should be_an_instance_of(Time)
+      expect(@record.created_at).to be_an_instance_of(Time)
     end
     it "should have a url set" do
-      @record.url.should eq(url)
+      expect(@record.url).to eq(url)
+    end
+
+    context "url already added" do
+      let(:new_tag) { random_string }
+
+      it "should not add the url again" do
+        expect{ store.add(url, new_tag) }.to_not change{ store.collection.count }
+      end
+
+      it "should return the existing id" do
+        existing_id = store.collection.find_one({ 'url' => url })['id']
+        expect(store.add(url, new_tag)).to eq(existing_id)
+      end
     end
   end
 
@@ -39,7 +52,7 @@ describe Store do
     end
     it "should add the params to the record" do
       subject
-      store.get(@id).clicks.first['ip'].should eq(params[:ip])
+      expect(store.get(@id).clicks.first['ip']).to eq(params[:ip])
     end
 
   end
