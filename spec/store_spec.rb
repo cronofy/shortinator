@@ -31,7 +31,7 @@ describe Store do
       end
 
       it "should return the existing id" do
-        existing_id = store.collection.find_one({ 'url' => url })['id']
+        existing_id = store.collection.find({ 'url' => url }).first['id']
         expect(store.add(url, new_tag)).to eq(existing_id)
       end
     end

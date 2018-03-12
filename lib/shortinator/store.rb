@@ -19,7 +19,7 @@ module Shortinator
 
     def collection
       @_collection ||= begin
-        @_collection = client.db['shortinator_urls']
+        @_collection = client['shortinator_urls']
         ensure_indexes
         @_collection
       end
@@ -27,25 +27,26 @@ module Shortinator
 
     def client
       Shortinator.store_configured!
-      Mongo::MongoClient.from_uri(Shortinator.store_url)
+      Mongo::Client.new(Shortinator.store_url)
     end
 
     def ensure_indexes
-      collection.ensure_index([['id', Mongo::ASCENDING]], { :unique => true })
-      # not making this unique as existing data is likely to fall foul
-      collection.ensure_index([['url', Mongo::ASCENDING]])
+      collection.indexes.create_many([
+        { :key => { id: 1 }, :unique => true },
+        { :key => { url: 1 }},
+      ])
     end
 
     def add(url, tags={})
-      unless doc  = collection.find_one({ 'url' => url })
+      unless doc = collection.find({ 'url' => url }).first
         doc = new_doc(generate_id, url, Time.now.utc, tags)
-        collection.insert(doc)
+        collection.insert_one(doc)
       end
       doc['id']
     end
 
     def insert(id, url, created_at=Time.now.utc, tags={})
-      collection.insert(new_doc(id, url, created_at, tags))
+      collection.insert_one(new_doc(id, url, created_at, tags))
     end
 
     def new_doc(id, url, created_at=Time.now.utc, tags={})
@@ -60,11 +61,11 @@ module Shortinator
     end
 
     def id_exists?(id)
-      collection.find({ 'id' => id } , { :fields => { :_id => 1 } }).limit(1).count(true) > 0
+      collection.find({ 'id' => id } , { :fields => { :_id => 1 } }).limit(1).count() > 0
     end
 
     def get(id)
-      if item = collection.find_one('id' => id)
+      if item = collection.find('id' => id).first
         ShortenedLink.new(item['id'], item['url'], item['created_at'], item['click_count'], item['clicks'], item['tags'])
       end
     end
@@ -75,7 +76,7 @@ module Shortinator
         '$inc' => { 'click_count' => 1 },
         '$push' => { 'clicks' => params.merge({ 'at' => at}) }
       }
-      collection.update(query, doc)
+      collection.update_one(query, doc)
     end
   end
 end
